@@ -5,6 +5,7 @@ const WebSocketClient: React.FC = () => {
     const [ws, setWs] = useState<WebSocket | null>(null);
     const [message, setMessage] = useState<string>('');
     const [response, setResponse] = useState<string>('');
+    // TODO: make a state that holds all chat history and then spreads the last BE message in correctly formatted
     /*const nameInputRef = useRef<HTMLInputElement>(null);*/
     const [name, setName] = useState<string>('');
     const messageInputRef = useRef<HTMLInputElement>(null);
@@ -26,6 +27,7 @@ const WebSocketClient: React.FC = () => {
         socket.onmessage = (event: MessageEvent) => {
             console.log(`Received message from server: ${event.data}`);
             setResponse(event.data);
+            // TODO: structure nicely for FE with color
         };
 
         socket.onclose = (event) => {
@@ -62,14 +64,29 @@ const WebSocketClient: React.FC = () => {
 
             socket.close();
         };
-    }, [name]);
+    }, []);
+
+    useEffect(() => {
+        if (!ws || ws.readyState !== WebSocket.OPEN) return;
+        if (!name) return;
+
+        ws.send(JSON.stringify({
+            type: 'join',
+            name
+        }));
+    }, [name, ws]);
 
     const handleSendMessage = () => {
 /*        const name = nameInputRef.current?.value || 'Anonymous';
         const msg = messageInputRef.current?.value || '';
         const fullMessage = `${name}: ${msg}`;*/
         if (ws && ws.readyState === WebSocket.OPEN) {
-            ws.send(fullMessage);
+            /*   ws.send(fullMessage);*/
+
+            ws.send(JSON.stringify({
+                type: 'message',
+                text: fullMessage
+            }));
         }
     };
     return (

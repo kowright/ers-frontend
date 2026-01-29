@@ -38,22 +38,24 @@ export const LandingPage = ({ name, setName }: LandingPageProps) => {
                         placeholder="Enter your name"
                         ref={nameInputRef}
                     />
+                    <div>
+                        <p>Choose your Color</p>
+                        <input
+                            type="color"
+                            value={color}
+                            onChange={handleColorChange}
+                        />
+
+                    </div>
                     <button onClick={handleSubmit}>Submit</button>
                 </div>
             ) : (
                 <div>
-                    <h5>Welcome {name}!</h5>
+                        <h5>Welcome {name}!</h5> 
+                       {/* Make name the color*/}
                 </div>
             )}
-            <div>
-                <p>Choose your Color</p>
-                <input
-                    type="color"
-                    value={color}
-                    onChange={handleColorChange}
-                />
-
-            </div>
+ 
 
             <br />
 
