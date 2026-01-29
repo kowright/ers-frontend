@@ -76,15 +76,21 @@ const WebSocketClient: React.FC = () => {
         <div>
             <LandingPage name={name} setName={setName} />
 
-            <input
-                type="text"
-                placeholder="Type a message"
-                ref={messageInputRef}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-            />
-            <button onClick={handleSendMessage}>Send Message</button>
-            <p>{response}</p>
+            {name ?  
+                <>
+                    <input
+                        type="text"
+                        placeholder="Type a message"
+                        ref={messageInputRef}
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                    />
+                    <button onClick={handleSendMessage}>Send Message</button>
+                    <p>{response}</p>
+                </>
+            : <p>Please give your name to start sending messages!</p>
+            }
+
         </div>
     );
 
