@@ -136,6 +136,8 @@ const WebSocketClient: React.FC = () => {
                 name: name,
                 clientId,
             }));
+
+            setMessage('');
         }
     };
 
@@ -143,8 +145,6 @@ const WebSocketClient: React.FC = () => {
         if (!chatEntry) {
             return;
         }
-        console.log('formatChat chatEntry', chatEntry);
-        console.log('formatChat local color', color)
         const dateTime = new Date(chatEntry.timestamp).toLocaleTimeString();
         const dateTimeString = `{${dateTime}}`;
 
@@ -167,6 +167,7 @@ const WebSocketClient: React.FC = () => {
 
             {name ?  
                 <>
+                    <div style={{gap: '4px', justifyContent: 'center', display: 'flex'}}>
                     <input
                         type="text"
                         placeholder="Type a message"
@@ -174,9 +175,13 @@ const WebSocketClient: React.FC = () => {
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                     />
-                    <button onClick={handleSendMessage}>Send Message</button>
+                        <button onClick={handleSendMessage}>Send Message</button>
+                    </div>
                     <p>{response}</p>
-                    {chatHistory.map(chat => formatChat(chat))}
+                    <div>
+                        <h3>Chats</h3>
+                        {chatHistory.map(chat => formatChat(chat))}
+                    </div>
                 </>
 
             : <p>Please give your name to start sending messages!</p>

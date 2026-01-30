@@ -33,7 +33,7 @@ export const LandingPage = ({ name, setName, setColor, color }: LandingPageProps
     return (
         <div className=''>
 
-            <h1>Welcome to the game!</h1>
+            <h1>Welcome to the chat!</h1>
             {!haveName ? (
                 <div>
                     <input
@@ -54,7 +54,7 @@ export const LandingPage = ({ name, setName, setColor, color }: LandingPageProps
                 </div>
             ) : (
                 <div>
-                        <h5>Welcome <span style={{ color: color, fontWeight: 'bold' }}>{name}</span>!</h5> 
+                        <h2>Welcome <span style={{ color: color, fontWeight: 'bold' }}>{name}</span>!</h2> 
                        {/* Make name the color*/}
                 </div>
             )}
