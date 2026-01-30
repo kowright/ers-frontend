@@ -3,22 +3,26 @@ import React from 'react';
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface LandingPageProps {
     name: string;
-    setName: React.Dispatch<React.SetStateAction<string>>
+    setName: React.Dispatch<React.SetStateAction<string>>;
+    setColor: React.Dispatch<React.SetStateAction<string>>;
+    color: string;
 }
 
-export const LandingPage = ({ name, setName }: LandingPageProps) => {
-    const nameInputRef = React.useRef<HTMLInputElement>(null);
+export const LandingPage = ({ name, setName, setColor, color }: LandingPageProps) => {
     const [haveName, setHaveName] = React.useState<boolean>(false);
-    const [color, setColor] = React.useState<string>('#ff0000');
+    const nameInputRef = React.useRef<HTMLInputElement>(null);
+/*    const [color, setColor] = React.useState<string>('#ff0000');*/
 /*    const [name, setName] = React.useState<string>('');
 */
     const handleSubmit = () => {
-        if (nameInputRef.current) {
-            const enteredName = nameInputRef.current.value;
-            if (enteredName.trim()) {
-                setName(enteredName);
-                setHaveName(true);
-            }
+      /*  if (name.trim()) {
+            setHaveName(true);
+        }*/
+
+        const enteredName = nameInputRef.current?.value ?? name;
+        if (enteredName.trim()) {
+            setName(enteredName);
+            setHaveName(true);
         }
     };
 
@@ -50,7 +54,7 @@ export const LandingPage = ({ name, setName }: LandingPageProps) => {
                 </div>
             ) : (
                 <div>
-                        <h5>Welcome {name}!</h5> 
+                        <h5>Welcome <span style={{ color: color, fontWeight: 'bold' }}>{name}</span>!</h5> 
                        {/* Make name the color*/}
                 </div>
             )}

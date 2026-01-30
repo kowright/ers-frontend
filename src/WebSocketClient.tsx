@@ -7,10 +7,12 @@ const WebSocketClient: React.FC = () => {
     const [message, setMessage] = useState<string>('');
     const [response, setResponse] = useState<string>('');
     const [chatHistory, setChatHistory] = React.useState<ChatEntry[]>([]);
+    const [clientId, setClientId] = React.useState<string>('');
 
     /*const nameInputRef = useRef<HTMLInputElement>(null);*/
     const [name, setName] = useState<string>('');
     const messageInputRef = useRef<HTMLInputElement>(null);
+    const [color, setColor] = useState<string>('#ff0000');
 
     interface ChatEntry {
         name: string;
@@ -39,13 +41,18 @@ const WebSocketClient: React.FC = () => {
             switch (parsedData.type) {
                 case 'server': {
                     console.log('SERVER:', parsedData.message);
+                    if (parsedData.id) {
+                        setClientId(parsedData.id);
+                    }
                     setResponse(parsedData.message);
                     break;
                 }
                 case 'chat': {
-
+                    console.log('parsedData color', parsedData.payload.color);
                     const newChatEntry: ChatEntry = parsedData.payload;
-                    newChatEntry.color = '#ff0000'; // TODO change to color in landing.tsx
+                    newChatEntry.color = parsedData.payload.color ? parsedData.payload.color : '#ff0000'; // TODO change to color in landing.tsx
+                    console.log('color', color)
+
 
                     /*                    
                     const newChatEntry: ChatEntry = {
@@ -68,7 +75,7 @@ const WebSocketClient: React.FC = () => {
 
         socket.onclose = (event) => {
             console.log("Socket closed", event);
-            console.log(`${name} has left the chat.`);
+            console.log(`${name} has left the chat.`); // TODO name isn't working
             // TODO: add to response to show on page
         };
 
@@ -110,9 +117,11 @@ const WebSocketClient: React.FC = () => {
 
         ws.send(JSON.stringify({
             type: 'join',
-            name
+            name, 
+            color,
+            clientId
         }));
-    }, [name, ws]);
+    }, [name, ws, color, clientId]);
 
     const handleSendMessage = () => {
 /*        const name = nameInputRef.current?.value || 'Anonymous';
@@ -125,6 +134,7 @@ const WebSocketClient: React.FC = () => {
                 type: 'message',
                 text: message,
                 name: name,
+                clientId,
             }));
         }
     };
@@ -133,10 +143,11 @@ const WebSocketClient: React.FC = () => {
         if (!chatEntry) {
             return;
         }
-
+        console.log('formatChat chatEntry', chatEntry);
+        console.log('formatChat local color', color)
         const dateTime = new Date(chatEntry.timestamp).toLocaleTimeString();
         const dateTimeString = `{${dateTime}}`;
-        console.log('color', chatEntry.color);
+
         if (chatEntry) {
             return (
                 <div style={{ textAlign: 'left'}}>
@@ -152,7 +163,7 @@ const WebSocketClient: React.FC = () => {
 
     return (
         <div>
-            <LandingPage name={name} setName={setName} />
+            <LandingPage name={name} setName={setName} setColor={setColor} color={color} />
 
             {name ?  
                 <>
