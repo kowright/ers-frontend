@@ -1,3 +1,4 @@
+import { time } from 'console';
 import React, { useState, useEffect, useRef } from 'react';
 import { LandingPage } from './landing';
 
@@ -5,12 +6,18 @@ const WebSocketClient: React.FC = () => {
     const [ws, setWs] = useState<WebSocket | null>(null);
     const [message, setMessage] = useState<string>('');
     const [response, setResponse] = useState<string>('');
-    // TODO: make a state that holds all chat history and then spreads the last BE message in correctly formatted
+    const [chatHistory, setChatHistory] = React.useState<ChatEntry[]>([]);
+
     /*const nameInputRef = useRef<HTMLInputElement>(null);*/
     const [name, setName] = useState<string>('');
     const messageInputRef = useRef<HTMLInputElement>(null);
 
-    const fullMessage = `${name || 'Anonymous'}: ${message}`;
+    interface ChatEntry {
+        name: string;
+        color: string;
+        message: string;
+        timestamp: string;
+    }
 
 
     useEffect(() => {
@@ -26,12 +33,43 @@ const WebSocketClient: React.FC = () => {
         // Listen for messages
         socket.onmessage = (event: MessageEvent) => {
             console.log(`Received message from server: ${event.data}`);
-            setResponse(event.data);
+
+            const parsedData = JSON.parse(event.data);
+
+            switch (parsedData.type) {
+                case 'server': {
+                    console.log('SERVER:', parsedData.message);
+                    setResponse(parsedData.message);
+                    break;
+                }
+                case 'chat': {
+
+                    const newChatEntry: ChatEntry = parsedData.payload;
+                    newChatEntry.color = '#ff0000'; // TODO change to color in landing.tsx
+
+                    /*                    
+                    const newChatEntry: ChatEntry = {
+                                            name: parsedData.name,
+                                            message: parsedData.message,
+                                            timestamp: parsedData.timestamp,
+                                            color: '#ff0000',
+                                        }*/
+                    console.log('newChatEntry', newChatEntry);
+                    setChatHistory(prev => [...prev, newChatEntry]);
+                    break;
+                }
+                default:
+                    console.warn('Unknown message type:', parsedData);
+            }
+
+   
             // TODO: structure nicely for FE with color
         };
 
         socket.onclose = (event) => {
             console.log("Socket closed", event);
+            console.log(`${name} has left the chat.`);
+            // TODO: add to response to show on page
         };
 
   /*      socket.onerror = (error) => {
@@ -44,7 +82,7 @@ const WebSocketClient: React.FC = () => {
             if (socket.readyState === WebSocket.OPEN) {
  /*               const name = nameInputRef.current?.value || 'Anonymous';*/
                 const disconnectMessage = `${name} has left the chat.`;
-                socket.send(disconnectMessage);
+/*                socket.send(disconnectMessage);*/
             }
             // Not needed: socket.close(); – browser will do this automatically
         };
@@ -85,10 +123,33 @@ const WebSocketClient: React.FC = () => {
 
             ws.send(JSON.stringify({
                 type: 'message',
-                text: fullMessage
+                text: message,
+                name: name,
             }));
         }
     };
+
+    const formatChat = (chatEntry: ChatEntry) => {
+        if (!chatEntry) {
+            return;
+        }
+
+        const dateTime = new Date(chatEntry.timestamp).toLocaleTimeString();
+        const dateTimeString = `{${dateTime}}`;
+        console.log('color', chatEntry.color);
+        if (chatEntry) {
+            return (
+                <div style={{ textAlign: 'left'}}>
+                    
+                    {dateTimeString} [<span style={{ color: chatEntry.color, fontWeight: 'bold' }}>{chatEntry.name}</span>]: {chatEntry.message}
+                   
+                   <br/>
+
+                </div>
+            )
+        }
+    }
+
     return (
         <div>
             <LandingPage name={name} setName={setName} />
@@ -104,7 +165,9 @@ const WebSocketClient: React.FC = () => {
                     />
                     <button onClick={handleSendMessage}>Send Message</button>
                     <p>{response}</p>
+                    {chatHistory.map(chat => formatChat(chat))}
                 </>
+
             : <p>Please give your name to start sending messages!</p>
             }
 

@@ -9,6 +9,7 @@ interface LandingPageProps {
 export const LandingPage = ({ name, setName }: LandingPageProps) => {
     const nameInputRef = React.useRef<HTMLInputElement>(null);
     const [haveName, setHaveName] = React.useState<boolean>(false);
+    const [color, setColor] = React.useState<string>('#ff0000');
 /*    const [name, setName] = React.useState<string>('');
 */
     const handleSubmit = () => {
@@ -20,8 +21,6 @@ export const LandingPage = ({ name, setName }: LandingPageProps) => {
             }
         }
     };
-
-    const [color, setColor] = React.useState<string>('#ff0000');
 
     const handleColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setColor(event.target.value);
