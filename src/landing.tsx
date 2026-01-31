@@ -1,6 +1,5 @@
 import React from 'react';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface LandingPageProps {
     name: string;
     setName: React.Dispatch<React.SetStateAction<string>>;
@@ -11,14 +10,8 @@ interface LandingPageProps {
 export const LandingPage = ({ name, setName, setColor, color }: LandingPageProps) => {
     const [haveName, setHaveName] = React.useState<boolean>(false);
     const nameInputRef = React.useRef<HTMLInputElement>(null);
-/*    const [color, setColor] = React.useState<string>('#ff0000');*/
-/*    const [name, setName] = React.useState<string>('');
-*/
-    const handleSubmit = () => {
-      /*  if (name.trim()) {
-            setHaveName(true);
-        }*/
 
+    const handleSubmit = () => {
         const enteredName = nameInputRef.current?.value ?? name;
         if (enteredName.trim()) {
             setName(enteredName);
@@ -55,7 +48,6 @@ export const LandingPage = ({ name, setName, setColor, color }: LandingPageProps
             ) : (
                 <div>
                         <h2>Welcome <span style={{ color: color, fontWeight: 'bold' }}>{name}</span>!</h2> 
-                       {/* Make name the color*/}
                 </div>
             )}
  

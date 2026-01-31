@@ -1,4 +1,3 @@
-import { time } from 'console';
 import React, { useState, useEffect, useRef } from 'react';
 import { LandingPage } from './landing';
 
@@ -9,7 +8,6 @@ const WebSocketClient: React.FC = () => {
     const [chatHistory, setChatHistory] = React.useState<ChatEntry[]>([]);
     const [clientId, setClientId] = React.useState<string>('');
 
-    /*const nameInputRef = useRef<HTMLInputElement>(null);*/
     const [name, setName] = useState<string>('');
     const messageInputRef = useRef<HTMLInputElement>(null);
     const [color, setColor] = useState<string>('#ff0000');
@@ -20,7 +18,6 @@ const WebSocketClient: React.FC = () => {
         message: string;
         timestamp: string;
     }
-
 
     useEffect(() => {
         // Create WebSocket connection
@@ -34,13 +31,14 @@ const WebSocketClient: React.FC = () => {
 
         // Listen for messages
         socket.onmessage = (event: MessageEvent) => {
-            console.log(`Received message from server: ${event.data}`);
+            console.info(`Received message from server: ${event.data}`);
+            
 
             const parsedData = JSON.parse(event.data);
 
             switch (parsedData.type) {
                 case 'server': {
-                    console.log('SERVER:', parsedData.message);
+                    console.info('SERVER:', parsedData.message);
                     if (parsedData.id) {
                         setClientId(parsedData.id);
                     }
@@ -48,63 +46,36 @@ const WebSocketClient: React.FC = () => {
                     break;
                 }
                 case 'chat': {
-                    console.log('parsedData color', parsedData.payload.color);
                     const newChatEntry: ChatEntry = parsedData.payload;
-                    newChatEntry.color = parsedData.payload.color ? parsedData.payload.color : '#ff0000'; // TODO change to color in landing.tsx
-                    console.log('color', color)
-
-
-                    /*                    
-                    const newChatEntry: ChatEntry = {
-                                            name: parsedData.name,
-                                            message: parsedData.message,
-                                            timestamp: parsedData.timestamp,
-                                            color: '#ff0000',
-                                        }*/
-                    console.log('newChatEntry', newChatEntry);
+                    newChatEntry.color = parsedData.payload.color ? parsedData.payload.color : '#ff0000';
                     setChatHistory(prev => [...prev, newChatEntry]);
                     break;
                 }
                 default:
                     console.warn('Unknown message type:', parsedData);
             }
-
-   
-            // TODO: structure nicely for FE with color
         };
 
         socket.onclose = (event) => {
             console.log("Socket closed", event);
-            console.log(`${name} has left the chat.`); // TODO name isn't working
-            // TODO: add to response to show on page
         };
 
-  /*      socket.onerror = (error) => {
+        socket.onerror = (error) => {
             console.error("Socket error:", error);
         };
-*/
+
 
         // Function to send disconnect message
         const handleBeforeUnload = () => {
             if (socket.readyState === WebSocket.OPEN) {
- /*               const name = nameInputRef.current?.value || 'Anonymous';*/
-                const disconnectMessage = `${name} has left the chat.`;
-/*                socket.send(disconnectMessage);*/
+               console.log('Disconnecting.')
             }
-            // Not needed: socket.close(); – browser will do this automatically
         };
 
-        // Attach beforeunload event
         window.addEventListener('beforeunload', handleBeforeUnload);
-
 
         // Cleanup on unmount
         return () => {
-       /*     if (socket.readyState === WebSocket.OPEN) {
-                const name = nameInputRef.current?.value || 'Anonymous';
-                const disconnectMessage = `${name} has left the chat.`;
-                socket.send(disconnectMessage);
-            }*/
             window.removeEventListener('beforeunload', handleBeforeUnload);
 
             socket.close();
@@ -124,11 +95,7 @@ const WebSocketClient: React.FC = () => {
     }, [name, ws, color, clientId]);
 
     const handleSendMessage = () => {
-/*        const name = nameInputRef.current?.value || 'Anonymous';
-        const msg = messageInputRef.current?.value || '';
-        const fullMessage = `${name}: ${msg}`;*/
         if (ws && ws.readyState === WebSocket.OPEN) {
-            /*   ws.send(fullMessage);*/
 
             ws.send(JSON.stringify({
                 type: 'message',
